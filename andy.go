@@ -185,7 +185,7 @@ func resizeTo(drawableInfo *DrawableInfo, img *image.Image, folder string) {
 func main() {
   var green = color.New(color.FgGreen).SprintfFunc()
   var dpitizeCmd = &cobra.Command{
-    Use: "dpitize [asset filename]",
+    Use: "dpi [asset filename]",
     Short: "Take an asset and resize it for various densities.",
     Run: func(cmd *cobra.Command, args []string) {
       if len(args) != 1 {
