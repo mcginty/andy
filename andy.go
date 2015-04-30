@@ -33,7 +33,6 @@ const (
 
 var (
   folderToDensity = map[string]dpi{
-    //"drawable-ldpi":    LDPI,
     "drawable-mdpi":    MDPI,
     "drawable-hdpi":    HDPI,
     "drawable-xhdpi":   XHDPI,
@@ -42,12 +41,11 @@ var (
   }
 
   densityToFolder = map[dpi]string{
-    //LDPI:   "drawable-ldpi",
-    MDPI:   "drawable-mdpi",
-    HDPI:   "drawable-hdpi",
-    XHDPI:  "drawable-xhdpi",
-    XXHDPI: "drawable-xxhdpi",
-    XXXHDPI:"drawable-xxxhdpi",
+    MDPI:    "drawable-mdpi",
+    HDPI:    "drawable-hdpi",
+    XHDPI:   "drawable-xhdpi",
+    XXHDPI:  "drawable-xxhdpi",
+    XXXHDPI: "drawable-xxxhdpi",
   }
 
   densityPriorityList = []string{
@@ -56,7 +54,6 @@ var (
     "drawable-xhdpi",
     "drawable-hdpi",
     "drawable-mdpi",
-    //"drawable-ldpi",
   }
 
   green = color.New(color.FgGreen).SprintfFunc()
