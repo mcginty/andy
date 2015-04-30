@@ -58,6 +58,8 @@ var (
     "drawable-mdpi",
     //"drawable-ldpi",
   }
+
+  green = color.New(color.FgGreen).SprintfFunc()
 )
 
 func fileExists(file string) bool {
@@ -120,10 +122,8 @@ func tryGetAbsPath(path string) (absPath string) {
 }
 
 func findHighestDensity(resFolder string, filename string) (density dpi, err error) {
-  fmt.Printf("findHighestDensity(\"%s\", \"%s\")\n", resFolder, filename)
   for _, folder := range densityPriorityList {
     if fileExists(filepath.Join(resFolder, folder, filename)) {
-      fmt.Printf("file exists! %s", filepath.Join(resFolder, folder, filename))
       return folderToDensity[folder], nil
     }
   }
@@ -169,21 +169,21 @@ func resizeToFolders(drawableInfo *DrawableInfo, img *image.Image) {
 }
 
 func resizeTo(drawableInfo *DrawableInfo, img *image.Image, folder string) {
-  fmt.Printf("resizeTo(\"%s\", \"%s\")\n", (*drawableInfo).Filename, folder)
   targetDensity := folderToDensity[folder]
+  targetPath := filepath.Join((*drawableInfo).ResFolder, folder, (*drawableInfo).Filename)
   width, _ := getDimens(img)
   resized := resize.Resize(uint(float64(width)*float64(targetDensity)/float64((*drawableInfo).Density)), 0, *img, resize.Lanczos3)
-  out, err := os.Create(filepath.Join((*drawableInfo).ResFolder, folder, (*drawableInfo).Filename))
+  out, err := os.Create(targetPath)
   if err != nil {
     log.Fatal(err)
   }
   defer out.Close()
 
   png.Encode(out, resized);
+  fmt.Printf("%s %s\n", green("generated"), targetPath)
 }
 
 func main() {
-  var green = color.New(color.FgGreen).SprintfFunc()
   var dpitizeCmd = &cobra.Command{
     Use: "dpi [asset filename]",
     Short: "Take an asset and resize it for various densities.",
@@ -195,10 +195,10 @@ func main() {
       if err != nil {
         log.Fatal(err)
       }
-      fmt.Printf("%s: %s, %s: %s\n", green("res dir"), drawableInfo.ResFolder, green("density"), drawableInfo.Density)
+      //fmt.Printf("%s: %s, %s: %s\n", green("res dir"), drawableInfo.ResFolder, green("density"), drawableInfo.Density)
 
-      absPath, err := filepath.Abs(args[0])
-      fmt.Printf("%s %s\n", green("opening"), absPath)
+      //absPath, err := filepath.Abs(args[0])
+      //fmt.Printf("%s %s\n", green("opening"), absPath)
       file, err := os.Open(filepath.Join(drawableInfo.ResFolder, densityToFolder[drawableInfo.Density], drawableInfo.Filename))
       if err != nil { log.Fatal(err) }
 
