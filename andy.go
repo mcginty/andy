@@ -159,12 +159,15 @@ func resizeToFolders(drawableInfo *DrawableInfo, img *image.Image) {
   var startingDensity int
   for i, folder := range densityPriorityList {
     if (folderToDensity[folder] == (*drawableInfo).Density) {
-      startingDensity = i
+      startingDensity = i+1
       break
     }
   }
-  for _, folder := range densityPriorityList[startingDensity:] {
-    resizeTo(drawableInfo, img, folder)
+
+  if startingDensity < len(densityPriorityList) {
+    for _, folder := range densityPriorityList[startingDensity:] {
+      resizeTo(drawableInfo, img, folder)
+    }
   }
 }
 
@@ -199,7 +202,9 @@ func main() {
 
       //absPath, err := filepath.Abs(args[0])
       //fmt.Printf("%s %s\n", green("opening"), absPath)
-      file, err := os.Open(filepath.Join(drawableInfo.ResFolder, densityToFolder[drawableInfo.Density], drawableInfo.Filename))
+      assetPath := filepath.Join(drawableInfo.ResFolder, densityToFolder[drawableInfo.Density], drawableInfo.Filename)
+      fmt.Printf("%s %s\n", green("source"), assetPath)
+      file, err := os.Open(assetPath)
       if err != nil { log.Fatal(err) }
 
       img, err := png.Decode(file)
