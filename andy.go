@@ -179,36 +179,34 @@ func resizeTo(drawableInfo *DrawableInfo, img *image.Image, folder string) {
   }
   defer out.Close()
 
-  png.Encode(out, resized);
-  fmt.Printf("%s %s\n", green("generated"), targetPath)
+  png.Encode(out, resized)
+  fmt.Printf("  %s %s\n", green("->"), targetPath)
 }
 
 func main() {
   var dpitizeCmd = &cobra.Command{
-    Use: "dpi [asset filename]",
-    Short: "Take an asset and resize it for various densities.",
+    Use: "dpi [assets]",
+    Short: "Take one or more assets and resize it for various densities.",
     Run: func(cmd *cobra.Command, args []string) {
-      if len(args) != 1 {
-        log.Fatal("need a filename.")
+      if len(args) < 1 {
+        log.Fatal("need one or more filenames.")
       }
-      drawableInfo, err := getDrawableInfo(args[0])
-      if err != nil {
-        log.Fatal(err)
+      for _, arg := range args {
+        drawableInfo, err := getDrawableInfo(arg)
+        if err != nil {
+          log.Fatal(err)
+        }
+        assetPath := filepath.Join(drawableInfo.ResFolder, densityToFolder[drawableInfo.Density], drawableInfo.Filename)
+        fmt.Printf("%s %s\n", green("from"), assetPath)
+        file, err := os.Open(assetPath)
+        if err != nil { log.Fatal(err) }
+
+        img, err := png.Decode(file)
+        if err != nil { log.Fatal(err) }
+        file.Close()
+
+        resizeToFolders(&drawableInfo, &img)
       }
-      //fmt.Printf("%s: %s, %s: %s\n", green("res dir"), drawableInfo.ResFolder, green("density"), drawableInfo.Density)
-
-      //absPath, err := filepath.Abs(args[0])
-      //fmt.Printf("%s %s\n", green("opening"), absPath)
-      assetPath := filepath.Join(drawableInfo.ResFolder, densityToFolder[drawableInfo.Density], drawableInfo.Filename)
-      fmt.Printf("%s %s\n", green("source"), assetPath)
-      file, err := os.Open(assetPath)
-      if err != nil { log.Fatal(err) }
-
-      img, err := png.Decode(file)
-      if err != nil { log.Fatal(err) }
-      file.Close()
-
-      resizeToFolders(&drawableInfo, &img)
     },
   }
 
