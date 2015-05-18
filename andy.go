@@ -7,6 +7,8 @@ import (
   "image/png"
   "log"
   "os"
+  "strconv"
+  "regexp"
   "path/filepath"
   "github.com/spf13/cobra"
   "github.com/fatih/color"
@@ -46,6 +48,18 @@ var (
     XHDPI:   "drawable-xhdpi",
     XXHDPI:  "drawable-xxhdpi",
     XXXHDPI: "drawable-xxxhdpi",
+  }
+
+  ascendingDensityList = []dpi {
+    MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI,
+  }
+
+  densityToCanonical = map[dpi]string{
+    MDPI:    "mdpi",
+    HDPI:    "hdpi",
+    XHDPI:   "xhdpi",
+    XXHDPI:  "xxhdpi",
+    XXXHDPI: "xxxhdpi",
   }
 
   densityPriorityList = []string{
@@ -210,7 +224,23 @@ func main() {
     },
   }
 
+  var convertCmd = &cobra.Command{
+    Use: "convert [unit]",
+    Short: "Convert a density-independent unit to its corresponding pixel sizes per density.",
+    Run: func(cmd *cobra.Command, args []string) {
+      if len(args) != 1 {
+        log.Fatal("pass in one unit measurement, please. ex: 30dp")
+      }
+      dpRegex := regexp.MustCompile(`(\d+)dp`)
+      dpValue, _ := strconv.ParseInt(dpRegex.FindStringSubmatch(args[0])[1], 0, 0)
+      for _, density := range ascendingDensityList {
+        fmt.Printf("  %8s: %.1fpx\n", densityToCanonical[density], float64(dpValue) / float64(MDPI) * float64(density))
+      }
+    },
+  }
+
   var rootCmd = &cobra.Command{Use: "andy"}
   rootCmd.AddCommand(dpitizeCmd)
+  rootCmd.AddCommand(convertCmd)
   rootCmd.Execute()
 }
