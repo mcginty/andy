@@ -231,8 +231,8 @@ func main() {
       if len(args) != 1 {
         log.Fatal("pass in one unit measurement, please. ex: 30dp")
       }
-      dpRegex := regexp.MustCompile(`(\d+)dp`)
-      dpValue, _ := strconv.ParseInt(dpRegex.FindStringSubmatch(args[0])[1], 0, 0)
+      dpRegex := regexp.MustCompile(`(\d+\.?\d*)dp`)
+      dpValue, _ := strconv.ParseFloat(dpRegex.FindStringSubmatch(args[0])[1], 0)
       for _, density := range ascendingDensityList {
         fmt.Printf("  %8s: %.1fpx\n", densityToCanonical[density], float64(dpValue) / float64(MDPI) * float64(density))
       }
