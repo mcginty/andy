@@ -11,3 +11,9 @@ go get github.com/mcginty/andy
 ```
 andy dpi icon.png
 ```
+
+`andy convert <Xdp>` quickly converts a density independent value to corresponding pixel values. Comes in handy when doing asset designs.
+
+```
+andy convert 3.2dp
+```
